@@ -34,20 +34,27 @@ function schedule_aripaev() {
 
             axios.get("https://podcastapi.aripaev.ee/api/v1/shows/" + show._id + "/podcasts").then((episodes) => {
                 episodes.data.podcasts.forEach((episode) => {
-                    podcast.addItem({
-                        title:  episode.title,
-                        description: episode.description,
-                        url: 'https://www.aripaev.ee/raadio/episood/' + show.slug, // link to the item
-                        categories: [show.categoryName], // optional - array of item categories
-                        author: episode.authorNames.join(), // optional - defaults to feed author property
-                        date: episode.publishDate, // any format that js Date can parse.
-                        enclosure : {url: episode.audioUrl},
-                        itunesAuthor: episode.authorNames.join(),
-                        itunesExplicit: false,
-                        itunesSubtitle: show.categoryName,
-                        itunesSummary: episode.description,
-                        itunesNewFeedUrl: 'https://podcast.sisas.me/podcasts/' + show.slug + ".xml",
-                    });
+                    if(episode.audioUrl !== undefined) {
+                        axios.head(episode.audioUrl) .then((audio) => {
+                            podcast.addItem({
+                                title:  episode.title,
+                                description: episode.description,
+                                url: 'https://www.aripaev.ee/raadio/episood/' + show.slug, // link to the item
+                                categories: [show.categoryName], // optional - array of item categories
+                                author: episode.authorNames.join(), // optional - defaults to feed author property
+                                date: episode.publishDate, // any format that js Date can parse.
+                                enclosure : {url: episode.audioUrl},
+                                length: audio.headers["content-length"],
+                                itunesAuthor: episode.authorNames.join(),
+                                itunesExplicit: false,
+                                itunesSubtitle: show.categoryName,
+                                itunesSummary: episode.description,
+                                itunesNewFeedUrl: 'https://podcast.sisas.me/podcasts/' + show.slug + ".xml",
+                            });
+                        }).catch((err) => {
+                            console.log(err)
+                        })
+                    }
                 })
 
                 var podcastFeedFile = "./public/podcasts/" + show.slug + ".xml"
