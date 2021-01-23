@@ -35,29 +35,34 @@ function schedule_aripaev() {
             axios.get("https://podcastapi.aripaev.ee/api/v1/shows/" + show._id + "/podcasts").then((episodes) => {
                 episodes.data.podcasts.forEach((episode) => {
                     if (episode.audioUrl !== undefined) {
-                        axios.head(episode.audioUrl).then((audio) => {
-                            feed.addItem({
-                                title: episode.title,
-                                description: episode.description,
-                                url: 'https://www.aripaev.ee/raadio/episood/' + show.slug, // link to the item
-                                categories: [show.categoryName], // optional - array of item categories
-                                author: episode.authorNames.join(), // optional - defaults to feed author property
-                                date: episode.publishDate, // any format that js Date can parse.
-                                enclosure: {url: episode.audioUrl, size: audio.headers["content-length"]},
-                                itunesAuthor: episode.authorNames.join(),
-                                itunesExplicit: false,
-                                itunesSubtitle: show.categoryName,
-                                itunesSummary: episode.description,
-                                itunesNewFeedUrl: 'https://podcast.sisas.me/podcasts/' + show.slug + ".xml",
-                            });
 
-                            var podcastFeedFile = "./public/podcasts/" + show.slug + ".xml"
-                            const xml = feed.buildXml();
-                            createPodCastFeedFile(xml, podcastFeedFile);
-                        }).catch((err) => {
-                            //one episode gets 403
-                            //console.log(err)
-                        })
+                        var fetch = require("node-fetch")
+                        var mp3 = require('mp3-duration-estimate')
+                        const estimator = mp3.default(new mp3.FetchDataReader(fetch));
+
+                        estimator(episode.audioUrl)
+                            .then(audio => {
+                                feed.addItem({
+                                    title: episode.title,
+                                    description: episode.description,
+                                    url: 'https://www.aripaev.ee/raadio/episood/' + show.slug, // link to the item
+                                    categories: [show.categoryName], // optional - array of item categories
+                                    author: episode.authorNames.join(), // optional - defaults to feed author property
+                                    date: episode.publishDate, // any format that js Date can parse.
+                                    enclosure: {url: episode.audioUrl},
+                                    itunesAuthor: episode.authorNames.join(),
+                                    itunesExplicit: false,
+                                    itunesDuration: audio,
+                                    itunesSubtitle: show.categoryName,
+                                    itunesSummary: episode.description,
+                                    itunesNewFeedUrl: 'https://podcast.sisas.me/podcasts/' + show.slug + ".xml",
+                                });
+
+                                var podcastFeedFile = "./public/podcasts/" + show.slug + ".xml"
+                                const xml = feed.buildXml();
+                                createPodCastFeedFile(xml, podcastFeedFile);
+                            })
+                            .catch(error => console.error(error))
                     }
                 })
             })
