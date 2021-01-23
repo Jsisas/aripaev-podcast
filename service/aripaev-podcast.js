@@ -43,8 +43,7 @@ function schedule_aripaev() {
                                 categories: [show.categoryName], // optional - array of item categories
                                 author: episode.authorNames.join(), // optional - defaults to feed author property
                                 date: episode.publishDate, // any format that js Date can parse.
-                                enclosure: {url: episode.audioUrl},
-                                length: audio.headers["content-length"],
+                                enclosure: {url: episode.audioUrl, size: audio.headers["content-length"]},
                                 itunesAuthor: episode.authorNames.join(),
                                 itunesExplicit: false,
                                 itunesSubtitle: show.categoryName,
