@@ -16,7 +16,7 @@ function schedule_aripaev() {
                 title: show.title,
                 description: show.description,
                 feed_url: 'https://podcast.sisas.me/podcasts/' + show.slug + ".xml",
-                site_url: 'https://www.aripaev.ee/raadio/episood/' + show.slug,
+                site_url: 'https://www.aripaev.ee/raadio/saatesarjad/' + show.slug,
                 image_url: show.imageUrl,
                 author: show.authorNames.join(),
                 language: 'et',
@@ -37,10 +37,11 @@ function schedule_aripaev() {
                     podcast.addItem({
                         title:  episode.title,
                         description: episode.description,
-                        url: episode.audioUrl, // link to the item
+                        url: 'https://www.aripaev.ee/raadio/episood/' + show.slug, // link to the item
                         categories: [show.categoryName], // optional - array of item categories
                         author: episode.authorNames.join(), // optional - defaults to feed author property
                         date: episode.publishDate, // any format that js Date can parse.
+                        enclosure : {url: episode.audioUrl},
                         itunesAuthor: episode.authorNames.join(),
                         itunesExplicit: false,
                         itunesSubtitle: show.categoryName,
