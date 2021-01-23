@@ -46,7 +46,6 @@ function schedule_aripaev() {
                         itunesExplicit: false,
                         itunesSubtitle: show.categoryName,
                         itunesSummary: episode.description,
-                        itunesDuration: 12345,
                         itunesNewFeedUrl: 'https://podcast.sisas.me/podcasts/' + show.slug + ".xml",
                     });
                 })
