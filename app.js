@@ -26,6 +26,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 
+setTimeout(function(){
+    schedule_aripaev()
+    console.log("Podcast scheule was run at " + new Date().toISOString())
+}, 3600000);
 schedule_aripaev()
 
 module.exports = app;
