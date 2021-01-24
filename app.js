@@ -3,6 +3,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const exphbs = require('express-handlebars');
+const cron = require('node-cron');
 
 var indexRouter = require('./routes/index');
 
@@ -26,9 +27,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 
-setTimeout(function(){
+cron.schedule('0 * * * *', function() {
     schedule_aripaev()
     console.log("Podcast scheule was run at " + new Date().toISOString())
-}, 3600000);
+});
 
 module.exports = app;
